@@ -17,3 +17,4 @@ logs/
 # Local submission bundle populated before Docker builds.
 submission/vendor/
 submission/report/
+release-artifacts/
