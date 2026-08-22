@@ -1,0 +1,13 @@
+{
+  "policy": "Original FEAST checkpoints only; no EndoMapper-adapted weights.",
+  "depth": {
+    "model": "hk_mono_finetuned_dlpe_edge_ssim_depth_fix_thorough2",
+    "checkpoint": "weights_19",
+    "checkpoint_dir": "/raid/scratch_not_backed_up/xinwei/Datasets/Weights_FEAST/Weights_Feast_new/monodepth/hk_mono_finetuned_dlpe_edge_ssim_depth_fix_thorough2/models/weights_19"
+  },
+  "pose": {
+    "model": "hk_mono_finetuned_dlpe_edge_ssim_depth_fix_thorough2",
+    "checkpoint": "weights_19",
+    "checkpoint_dir": "/raid/scratch_not_backed_up/xinwei/Datasets/Weights_FEAST/Weights_Feast_new/monodepth/hk_mono_finetuned_dlpe_edge_ssim_depth_fix_thorough2/models/weights_19"
+  }
+}

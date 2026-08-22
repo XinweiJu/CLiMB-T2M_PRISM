@@ -1,0 +1,26 @@
+{
+  "source": "/raid/scratch_not_backed_up/xinwei/Datasets/SegCol",
+  "excluded_sequence": 22,
+  "train": {
+    "clean_samples": 1880,
+    "excluded_samples": 120,
+    "clean_clips": 47,
+    "excluded_clips": [
+      "Seq_022_0005755",
+      "Seq_022_0015313",
+      "Seq_022_0020815"
+    ],
+    "manifest": "segcol_train_minus_seq022.jsonl",
+    "sha256": "efcd938a6132a702e64026532b6507d74c4f8426846a5aa582f536e3973434b9"
+  },
+  "valid": {
+    "clean_samples": 520,
+    "excluded_samples": 40,
+    "clean_clips": 13,
+    "excluded_clips": [
+      "Seq_022_0027022"
+    ],
+    "manifest": "segcol_valid_minus_seq022.jsonl",
+    "sha256": "057986f2debbdc14f6b09871b1e6be9c2e8f3feb65c7511cd9f84c94ddc57d3c"
+  }
+}

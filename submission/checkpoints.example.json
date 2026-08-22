@@ -1,0 +1,33 @@
+{
+  "depth": {
+    "model": "T2M-DLPE-clean",
+    "checkpoint": "weights_29",
+    "checkpoint_dir": "/opt/models/PRISM-CLiMB/weights/depth",
+    "height": 288,
+    "width": 288,
+    "input_channels": 4,
+    "auxiliary_channel": "shading_0_255",
+    "sha256": {
+      "encoder.pth": "44ac2e711809b50e91cf34aec4a175f4b494327f4dd7ab5f60b472e50ac219bb",
+      "depth.pth": "cbb1c00398c69adaaa8cdd799d4ff0a182d6825d23154902486f557fe089fef0"
+    },
+    "training_provenance": {
+      "edge_training_exclusion": "SegCol Seq_022 excluded from train and validation manifests",
+      "clean_dexined_sha256": "642bb779b66b91add58d2246903d930054a134fa59703870579e1a1689d2b63e",
+      "stage2_initialization": "RGB Monodepth2 weights_19 fine-tuned on Hyper-Kvasir",
+      "stage2_epochs": 30
+    }
+  },
+  "shading": {
+    "model": "IID finetuned_mono_hkfull_288_pseudo_dsms_automasking_noadjust",
+    "checkpoint": "weights_19",
+    "checkpoint_dir": "/opt/models/PRISM-CLiMB/weights/shading",
+    "height": 288,
+    "width": 288,
+    "output": "illumination sigmoid multiplied by 255",
+    "sha256": {
+      "decompose_encoder.pth": "ac18288a342966d4492cedec994f53035fea25509beb056f53b3927b816aa9b2",
+      "decompose.pth": "f1a4980a8f7cd3ae68d36280d2dfbc04b651663b5ce848585ed722493e1b056e"
+    }
+  }
+}

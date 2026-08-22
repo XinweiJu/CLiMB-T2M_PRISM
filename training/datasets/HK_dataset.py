@@ -1,0 +1,149 @@
+from __future__ import absolute_import, division, print_function
+
+import os
+import numpy as np
+import PIL.Image as pil
+from .mono_dataset import MonoDataset
+import cv2
+import torch
+from path_config import generated_path
+
+class HKInitDataset(MonoDataset):
+    """Superclass for different types of KITTI dataset loaders
+    """
+    def __init__(self, *args, distorted=False, **kwargs):
+        super(HKInitDataset, self).__init__(*args, **kwargs)
+
+        # NOTE: Make sure your intrinsics matrix is *normalized* by the original image size.
+        # To normalize you need to scale the first row by 1 / image_width and the second row
+        # by 1 / image_height. Monodepth2 assumes a principal point to be exactly centered.
+        # If your principal point is far from the center you might need to disable the horizontal
+        # flip augmentation.
+        # HK from MeanIntrinsics.ipynb for C3VD data:
+        if distorted:
+            intrinsics = [0.7428879629629629, 0.7424861111111111, 0.4937833333333333, 0.5071601851851851]
+        else:
+            intrinsics = [0.6423119966210151, 0.6401273085242651, 0.4824200466376491, 0.5298353978680292]
+
+        # should i assume 0.5 0.5 center????? no i will remove flip
+        # also add c3vd option
+        self.K = np.array([[intrinsics[0], 0, intrinsics[2], 0],
+                           [0, intrinsics[1], intrinsics[3], 0],
+                           [0, 0, 1, 0],
+                           [0, 0, 0, 1]], dtype=np.float32)
+
+        self.full_res_shape = (288, 288)
+
+    # def check_depth(self):
+    #     velo_filename = r"velodyne_points/data/"
+    #     return os.path.isfile(velo_filename)
+
+    def get_color(self, folder, frame_index, side, do_flip):
+        color = self.loader(self.get_image_path(folder, frame_index, side))
+
+        # if do_flip:
+        #     color = color.transpose(pil.FLIP_LEFT_RIGHT)
+
+        return color
+
+
+class HKDataset(HKInitDataset):
+    """KITTI dataset which loads the original velodyne depth maps for ground truth
+    """
+    def __init__(self, *args, **kwargs):
+        super(HKDataset, self).__init__(*args, **kwargs)
+
+    def get_image_path(self, folder, frame_index, side):
+        if "C3VD" in folder:
+            f_str = "{:04d}_color{}".format(frame_index, self.img_ext)
+        elif "BBPS-2-3Frames" in folder:
+            f_str = "{:05d}{}".format(frame_index, self.img_ext)
+        elif self.data == "endomapper":
+            f_str = "{:06d}{}".format(frame_index, self.img_ext)
+        else:
+            raise ValueError("Unsupported image folder: {}".format(folder))
+        image_path = os.path.join(folder, f_str)
+        return image_path
+
+    def get_depth(self, folder, frame_index, side, do_flip):
+        if "C3VD" in folder:
+            f_str = "{:04d}_depth{}".format(frame_index, '.tiff')
+
+        depth_16bit = pil.open(os.path.join(folder, f_str))
+        depth_gt = np.array(depth_16bit, dtype=np.float32) # this is 16bit depth
+        depth_gt = depth_gt / (2**16-1)
+        return depth_gt
+
+    def get_edge(self, folder, frame_index):
+        edge_root = self.edge_root or generated_path("c3vd", "edge")
+        edge_path = os.path.join(
+            edge_root,
+            folder,
+            'avg',
+            f"{frame_index:04d}_color.png.npy")
+        edge = np.load(edge_path)
+
+        edge_resized = cv2.resize(
+            edge, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+        edge_tensor = torch.tensor(edge_resized, dtype=torch.float32).unsqueeze(0)
+        return edge_tensor
+
+    def get_edge_hk(self, folder, frame_index):
+        edge_root = self.edge_root or generated_path("hk", "edge")
+        edge_path = os.path.join(
+            edge_root,
+            folder,
+            'avg',
+            f"{frame_index:05d}.png.npy")
+        edge = np.load(edge_path)
+
+        edge_resized = cv2.resize(
+            edge, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+        edge_tensor = torch.tensor(edge_resized, dtype=torch.float32).unsqueeze(0)
+        return edge_tensor
+
+    def get_lum(self, folder, frame_index):
+        lum_root = self.shading_root or generated_path("c3vd", "shading")
+        if os.path.isdir(os.path.join(lum_root, "models", "weights_19")):
+            lum_root = os.path.join(lum_root, "models", "weights_19")
+        lum_path = os.path.join(
+            lum_root,
+            folder,
+            'decomposed',
+            f"light{frame_index:04d}_color.png")
+        lum = pil.open(lum_path)
+        lum = np.array(lum, dtype=np.float32) # this is 16bit depth
+
+        lum_tensor = torch.tensor(lum, dtype=torch.float32).unsqueeze(0)
+        return lum_tensor
+
+    def get_lum_hk(self, folder, frame_index):
+        shading_root = self.shading_root or generated_path("hk", "shading")
+        if os.path.isdir(os.path.join(shading_root, "models", "weights_19")):
+            shading_root = os.path.join(shading_root, "models", "weights_19")
+        lum_path = os.path.join(
+            shading_root,
+            folder,
+            'decomposed',
+            f"light{frame_index:05d}.png")
+        lum = pil.open(lum_path)
+        lum = np.array(lum, dtype=np.float32)
+
+        lum_tensor = torch.tensor(lum, dtype=torch.float32).unsqueeze(0)
+        return lum_tensor
+
+    def get_edge_endomapper(self, folder, frame_index):
+        root = os.environ["PRISM_ENDOMAPPER_GENERATED"]
+        path = os.path.join(root, "edge", folder, "{:06d}.png".format(frame_index))
+        edge = np.asarray(pil.open(path).convert("L"), dtype=np.float32) / 255.0
+        edge = cv2.resize(
+            edge, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+        return torch.from_numpy(edge.astype(np.float32)).unsqueeze(0)
+
+    def get_lum_endomapper(self, folder, frame_index):
+        root = os.environ["PRISM_ENDOMAPPER_GENERATED"]
+        path = os.path.join(root, "shading", folder, "{:06d}.png".format(frame_index))
+        lum = np.asarray(pil.open(path).convert("L"), dtype=np.float32)
+        lum = cv2.resize(
+            lum, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+        return torch.from_numpy(lum.astype(np.float32)).unsqueeze(0)

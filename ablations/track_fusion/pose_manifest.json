@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "dlpe": {
+      "model": "hk_mono_finetuned_dlpe_edge_ssim_depth_fix_thorough2",
+      "checkpoint": "weights_19",
+      "checkpoint_dir": "/raid/scratch_not_backed_up/xinwei/Datasets/Weights_FEAST/Weights_Feast_new/monodepth/hk_mono_finetuned_dlpe_edge_ssim_depth_fix_thorough2/models/weights_19",
+      "height": 288,
+      "width": 288,
+      "auxiliary": "edge"
+    }
+  },
+  "edge": {
+    "checkpoint_path": "/raid/scratch_not_backed_up/xinwei/Workspace_backup/Baselines/z_Other_models/DexiNed/checkpoints/16_model.pth",
+    "height": 512,
+    "width": 512,
+    "mean_bgr": [103.939, 116.779, 123.68]
+  },
+  "shading": {
+    "checkpoint_dir": "/raid/scratch_not_backed_up/xinwei/Datasets/z_Weights_from_rema/IID/finetuned_mono_hkfull_288_pseudo_dsms_automasking_noadjust/models/weights_19",
+    "height": 288,
+    "width": 288
+  }
+}

@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+
+# Datasets, experiment outputs, and model artifacts are not versioned.
+data/
+outputs/
+results/
+logs/
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.mp4
+
+# Local submission bundle populated before Docker builds.
+submission/vendor/
+submission/report/
