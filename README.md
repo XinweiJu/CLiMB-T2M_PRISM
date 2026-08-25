@@ -205,7 +205,7 @@ ATE is reported in millimetres and rotational error is the challenge's
 40-frame relative rotation error in degrees; lower is better. Official hidden
 test results are kept separate from local released-data diagnostics.
 
-### Table 2 — Official hidden-test leaderboard
+### Official hidden-test leaderboard
 
 All entries below completed all 32 hidden-test sequences with 100% tracking
 coverage. The rank is the leaderboard rank recorded with these results.
@@ -221,7 +221,7 @@ T2M-DLPE-clean obtained the lowest rotational error among these submissions.
 Under the challenge protocol, methods within 5% in weighted ATE are
 tie-broken by rotational error.
 
-### Table 3 — Released-data diagnostics
+### Main released-data comparison
 
 These results compare the principal depth-to-PnP and direct-PoseNet variants
 on four released CLiMB clips and eight EndoMapper clips. Each dataset cell is
@@ -242,7 +242,7 @@ three-channel RGB model with edge-guided stage-3 pose fine-tuning; DLPL uses
 luminance for both networks, while DLPE uses luminance for DepthNet and edges
 for PoseNet.
 
-### Table 5 — Motion-conditioning ablations
+### Motion-conditioning ablations
 
 This ablation compares direct addition of point-track/flow cues with a learned
 fifth input channel. It also compares depth followed by Track2Map/PnP against
@@ -259,9 +259,9 @@ RotErr`; bold values are the best individual metric in each output branch.
 | C3VD flow5 | 8.19 / 6.09; 3.13 / 8.21 | 8.16 / 6.96; 3.38 / 9.26 |
 
 Learned Track5 gives the strongest released-data depth-to-PnP result, although
-its official hidden-test performance is not included in Table 2. Motion
-conditioning does not improve consistently when used for direct pose
-regression.
+its official hidden-test evaluation was still pending when these results were
+recorded. Motion conditioning does not improve consistently when used for
+direct pose regression.
 
 ---
 
