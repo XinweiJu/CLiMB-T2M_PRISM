@@ -32,6 +32,7 @@ regularizes the completed trajectory.
 - [Build and run](#-build-and-run)
 - [Training](#-training)
 - [Method](#️-method-name-and-short-description)
+- [Results](#-results)
 - [Reproducibility](#-reproducibility-notes)
 - [Citation](#-citation)
 
@@ -198,6 +199,72 @@ wall-clock values are provided in `submission/README.md`.
 
 ---
 
+## 📊 Results
+
+ATE is reported in millimetres and rotational error is the challenge's
+40-frame relative rotation error in degrees; lower is better. Official hidden
+test results are kept separate from local released-data diagnostics.
+
+### Table 2 — Official hidden-test leaderboard
+
+All entries below completed all 32 hidden-test sequences with 100% tracking
+coverage. The rank is the leaderboard rank recorded with these results.
+
+| Submission (ID) | Mean ATE ↓ | RotErr ↓ | s/frame | Rank |
+|---|---:|---:|---:|---:|
+| **Track2Map_PRISM_clean (9776768)** | 10.690 | **4.075** | 0.017 | **1** |
+| Track2Map-v2 (9773126) | **10.381** | 4.147 | 0.021 | 3 |
+| PRISM-DLPL pose (9773960) | 10.723 | 4.344 | 0.017 | 4 |
+| Track2Map-v3 (9774107) | 10.590 | 5.228 | 0.017 | 8 |
+
+T2M-DLPE-clean obtained the lowest rotational error among these submissions.
+Under the challenge protocol, methods within 5% in weighted ATE are
+tie-broken by rotational error.
+
+### Table 3 — Released-data diagnostics
+
+These results compare the principal depth-to-PnP and direct-PoseNet variants
+on four released CLiMB clips and eight EndoMapper clips. Each dataset cell is
+`ATE / RotErr`; runtime is locally measured end-to-end processing time.
+
+| Method | CLiMB (4) ↓ | EndoMapper (8) ↓ | ms/frame ↓ |
+|---|---:|---:|---:|
+| T2M | 5.814 / 4.381 | 3.128 / 7.242 | 43.98 |
+| **T2M-DLPE-clean** | **5.810 / 3.790** | 2.887 / **6.847** | 65.59 |
+| T2M-DLPL | 6.207 / 4.356 | **2.787** / 7.119 | 37.17 |
+| PRISM-E | 7.858 / 7.116 | 3.377 / 9.556 | **24.90** |
+| PRISM-DLPL | 7.990 / 8.162 | 3.420 / 11.597 | 39.18 |
+| PRISM-DLPE | 6.604 / 7.046 | 3.124 / 10.050 | 59.67 |
+
+`T2M-*` variants use the indicated depth prediction with CoTracker3 and PnP.
+The `PRISM-*` rows instead use direct PoseNet estimates. PRISM-E is the
+three-channel RGB model with edge-guided stage-3 pose fine-tuning; DLPL uses
+luminance for both networks, while DLPE uses luminance for DepthNet and edges
+for PoseNet.
+
+### Table 5 — Motion-conditioning ablations
+
+This ablation compares direct addition of point-track/flow cues with a learned
+fifth input channel. It also compares depth followed by Track2Map/PnP against
+direct PRISM PoseNet output. Each cell is `CLiMB ATE / RotErr; EndoMapper ATE /
+RotErr`; bold values are the best individual metric in each output branch.
+
+| Conditioning | T2M: depth → PnP | PRISM: PoseNet |
+|---|---:|---:|
+| None (clean DLPE) | 5.810 / **3.790**; 2.887 / 6.847 | 7.08 / 7.36; 3.40 / 9.57 |
+| Track-add | 6.28 / 4.33; 2.92 / 7.13 | **7.06** / 7.27; 3.40 / 9.52 |
+| Farneback flow-add | 5.90 / 4.36; 3.06 / 7.07 | **7.06** / 7.22; 3.40 / 9.49 |
+| Learned Track5 | **5.72** / 4.01; **2.77 / 6.39** | 7.75 / 7.43; 3.58 / 9.79 |
+| C3VD flow-add | 7.36 / 6.00; 3.10 / 7.92 | 7.84 / **6.87**; **3.30 / 9.15** |
+| C3VD flow5 | 8.19 / 6.09; 3.13 / 8.21 | 8.16 / 6.96; 3.38 / 9.26 |
+
+Learned Track5 gives the strongest released-data depth-to-PnP result, although
+its official hidden-test performance is not included in Table 2. Motion
+conditioning does not improve consistently when used for direct pose
+regression.
+
+---
+
 ## ✅ Reproducibility notes
 
 - The PRISM weight manifest records model dimensions, auxiliary-channel
@@ -206,8 +273,7 @@ wall-clock values are provided in `submission/README.md`.
   excluded from Git history.
 - Local runtime is diagnostic only; official challenge runtime is measured by
   the server.
-- The final method report will be added after the clean Table 3 / Table 5
-  ablations are complete.
+- Official hidden-test and local released-data results are reported separately.
 
 ---
 
