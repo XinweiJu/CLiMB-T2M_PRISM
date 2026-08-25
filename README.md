@@ -213,11 +213,15 @@ coverage. The rank is the leaderboard rank recorded with these results.
 | Submission (ID) | Mean ATE ↓ | RotErr ↓ | s/frame | Rank |
 |---|---:|---:|---:|---:|
 | **Track2Map_PRISM_clean (9776768)** | 10.690 | **4.075** | 0.017 | **1** |
+| T2M-PRISM-Track-clean (9777547) | 10.782 | 4.174 | 0.018 | — |
 | Track2Map-v2 (9773126) | **10.381** | 4.147 | 0.021 | 3 |
 | PRISM-DLPL pose (9773960) | 10.723 | 4.344 | 0.017 | 4 |
 | Track2Map-v3 (9774107) | 10.590 | 5.228 | 0.017 | 8 |
 
 T2M-DLPE-clean obtained the lowest rotational error among these submissions.
+The Learned Track5 submission completed all 32 sequences but did not improve
+over the clean unconditioned model. Its rank was not included in the exported
+leaderboard row available when this README was updated.
 Under the challenge protocol, methods within 5% in weighted ATE are
 tie-broken by rotational error.
 
@@ -258,10 +262,11 @@ RotErr`; bold values are the best individual metric in each output branch.
 | C3VD flow-add | 7.36 / 6.00; 3.10 / 7.92 | 7.84 / **6.87**; **3.30 / 9.15** |
 | C3VD flow5 | 8.19 / 6.09; 3.13 / 8.21 | 8.16 / 6.96; 3.38 / 9.26 |
 
-Learned Track5 gives the strongest released-data depth-to-PnP result, although
-its official hidden-test evaluation was still pending when these results were
-recorded. Motion conditioning does not improve consistently when used for
-direct pose regression.
+Learned Track5 gives the strongest released-data depth-to-PnP result. On the
+official hidden test it obtained 10.782 mm ATE and 4.174° RotErr, slightly
+behind clean DLPE at 10.690 mm and 4.075°. Motion conditioning therefore did
+not yield a consistent improvement across released and hidden-test data or
+when used for direct pose regression.
 
 ---
 
