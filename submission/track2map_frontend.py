@@ -25,7 +25,7 @@ class Track2MapFrontendConfig:
     min_pnp_points: int = 24
     min_pnp_inliers: int = 20
     min_pnp_inlier_ratio: float = 0.08
-    pnp_reprojection_error: float = 3.0
+    pnp_reprojection_error: float = 6.0
     max_direction_dispersion: float = 1.35
     radial_alignment_threshold: float = 0.55
     strong_pnp_inlier_ratio: float = 0.70

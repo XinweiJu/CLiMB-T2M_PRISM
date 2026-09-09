@@ -61,7 +61,7 @@ def apply_profile(args: argparse.Namespace) -> None:
     if args.profile not in ("v2", "v3"):
         return
     args.segment_length = 12
-    args.grid_size = 18
+    args.grid_size = 22
     args.disable_motion_gate = True
     args.propagate_on_failure = True
     args.propagation_max_frames = 3
@@ -71,9 +71,9 @@ def apply_profile(args: argparse.Namespace) -> None:
     args.mixed_precision = True
     if args.profile == "v3":
         if args.translation_smoothing_window is None:
-            args.translation_smoothing_window = 21
+            args.translation_smoothing_window = 11
         if args.rotation_smoothing_window is None:
-            args.rotation_smoothing_window = 9
+            args.rotation_smoothing_window = 5
 
 
 def validate_smoothing_args(args: argparse.Namespace) -> None:

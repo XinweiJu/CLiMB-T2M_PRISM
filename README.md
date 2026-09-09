@@ -1,6 +1,6 @@
 # 🧭 CLiMB-T2M_PRISM
 
-> **Official source release for T2M-DLPE-clean** — our PRISM-conditioned
+> **Official source release for T2M-DLPE-G22-clean** — our PRISM-conditioned
 > Track2Map entry for the [CLiMB Challenge](https://lnkd.in/eDpE5wAT).
 
 [![Release](https://img.shields.io/github/v/release/XinweiJu/CLiMB-T2M_PRISM?label=Release)](https://github.com/XinweiJu/CLiMB-T2M_PRISM/releases/latest)
@@ -8,12 +8,14 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-orange)
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 
-T2M-DLPE-clean replaces Track2Map's generic monocular anchor-depth predictor
+T2M-DLPE-G22-clean replaces Track2Map's generic monocular anchor-depth predictor
 with the luminance-conditioned **PRISM DLPE DepthNet**. **CoTracker3 Online**
 supplies multi-frame point correspondences. Anchor inverse depth lifts these
 correspondences into 3D, PnP-RANSAC estimates relative camera motion, bounded
 motion propagation handles short tracking failures, and fixed-lag smoothing
-regularizes the completed trajectory.
+regularizes the completed trajectory. The G22 submission uses a
+22-by-22 CoTracker query grid, a 6-pixel PnP-RANSAC threshold, and 11/5-frame
+translation/rotation smoothing.
 
 > [!NOTE]
 > Only **PRISM DepthNet** and the **luminance generator** run during
@@ -58,7 +60,7 @@ BGR video ─┬─> CoTracker3 Online ─> 2D tracks ────────�
 
 ## 📁 Repository layout
 
-- **`submission/`** — CLiMB container entrypoint and T2M-DLPE-clean inference code.
+- **`submission/`** — CLiMB container entrypoint and T2M-DLPE-G22-clean inference code.
 - **`training/`** — PRISM depth/pose training and leakage-controlled edge generation.
 - **`ablations/`** — track, optical-flow, and learned-extra-channel experiments.
 
@@ -136,12 +138,12 @@ After downloading the PRISM Release archive and CoTracker3, arrange the files
 as documented in `submission/README.md`, then run:
 
 ```bash
-docker build -t t2m-dlpe-clean:local submission
+docker build -t t2m-dlpe-g22-clean:local submission
 
 docker run --rm --gpus all --network=none \
   -v /absolute/input:/input:ro \
   -v /absolute/output:/output \
-  t2m-dlpe-clean:local
+  t2m-dlpe-g22-clean:local
 ```
 
 **📥 Input:** challenge MP4 files.
@@ -188,7 +190,7 @@ hyperparameter tuning.
 
 ## 🏷️ Method name and short description
 
-### **T2M-DLPE-clean**
+### **T2M-DLPE-G22-clean**
 
 **CoTracker3 Online correspondences + leakage-controlled PRISM DLPE inverse
 depth + depth-assisted PnP + bounded motion propagation + fixed-lag trajectory
@@ -207,18 +209,23 @@ test results are kept separate from local released-data diagnostics.
 
 ### Official hidden-test leaderboard
 
-All entries below completed all 32 hidden-test sequences with 100% tracking
-coverage. The rank is the leaderboard rank recorded with these results.
+The earlier entries below completed all 32 hidden-test sequences with 100%
+tracking coverage. The supplied G22 leaderboard row did not include its TFR,
+runtime, submission ID, or displayed rank.
 
 | Submission (ID) | Mean ATE ↓ | RotErr ↓ | s/frame | Rank |
 |---|---:|---:|---:|---:|
-| **Track2Map_PRISM_clean (9776768)** | 10.690 | **4.075** | 0.017 | **1** |
+| **T2M-DLPE-G22-clean (ID to verify)** | 10.591 | **3.583** | — | — |
+| Track2Map_PRISM_clean (9776768) | 10.690 | 4.075 | 0.017 | 1 |
 | T2M-PRISM-Track-clean (9777547) | 10.782 | 4.174 | 0.018 | — |
 | Track2Map-v2 (9773126) | **10.381** | 4.147 | 0.021 | 3 |
 | PRISM-DLPL pose (9773960) | 10.723 | 4.344 | 0.017 | 4 |
 | Track2Map-v3 (9774107) | 10.590 | 5.228 | 0.017 | 8 |
 
-T2M-DLPE-clean obtained the lowest rotational error among these submissions.
+T2M-DLPE-G22-clean improves the earlier clean submission from 10.690 to
+10.591 mm ATE and from 4.075° to 3.583° RotErr. Its official runtime,
+coverage, submission ID, and displayed rank were not included in the supplied
+leaderboard export and are therefore left unreported here.
 The Learned Track5 submission completed all 32 sequences but did not improve
 over the clean unconditioned model. Its rank was not included in the exported
 leaderboard row available when this README was updated.
@@ -234,11 +241,16 @@ on four released CLiMB clips and eight EndoMapper clips. Each dataset cell is
 | Method | CLiMB (4) ↓ | EndoMapper (8) ↓ | ms/frame ↓ |
 |---|---:|---:|---:|
 | T2M | 5.814 / 4.381 | 3.128 / 7.242 | 43.98 |
-| **T2M-DLPE-clean** | **5.810 / 3.790** | 2.887 / **6.847** | 65.59 |
-| T2M-DLPL | 6.207 / 4.356 | **2.787** / 7.119 | 37.17 |
+| T2M-DLPE-clean | 5.810 / 3.790 | 2.887 / 6.847 | 65.59 |
+| **T2M-DLPE-G22-clean** | **4.720 / 3.300** | **2.760 / 6.290** | 30.63* |
+| T2M-DLPL | 6.207 / 4.356 | 2.787 / 7.119 | 37.17 |
 | PRISM-E | 7.858 / 7.116 | 3.377 / 9.556 | **24.90** |
 | PRISM-DLPL | 7.990 / 8.162 | 3.420 / 11.597 | 39.18 |
 | PRISM-DLPE | 6.604 / 7.046 | 3.124 / 10.050 | 59.67 |
+
+\* G22 runtime is the exact EndoMapper local run; local timings were collected
+under varying machine load and are not directly comparable with official
+server timing.
 
 `T2M-*` variants use the indicated depth prediction with CoTracker3 and PnP.
 The `PRISM-*` rows instead use direct PoseNet estimates. PRISM-E is the
@@ -262,9 +274,11 @@ RotErr`; bold values are the best individual metric in each output branch.
 | C3VD flow-add | 7.36 / 6.00; 3.10 / 7.92 | 7.84 / **6.87**; **3.30 / 9.15** |
 | C3VD flow5 | 8.19 / 6.09; 3.13 / 8.21 | 8.16 / 6.96; 3.38 / 9.26 |
 
-Learned Track5 gives the strongest released-data depth-to-PnP result. On the
-official hidden test it obtained 10.782 mm ATE and 4.174° RotErr, slightly
-behind clean DLPE at 10.690 mm and 4.075°. Motion conditioning therefore did
+Among the motion-conditioning ablations, Learned Track5 gives the strongest
+released-data depth-to-PnP result. On the
+official hidden test it obtained 10.782 mm ATE and 4.174° RotErr, behind both
+the earlier clean DLPE result (10.690 mm/4.075°) and G22-clean
+(10.591 mm/3.583°). Motion conditioning therefore did
 not yield a consistent improvement across released and hidden-test data or
 when used for direct pose regression.
 
